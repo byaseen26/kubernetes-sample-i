@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: good-nginx
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: good-nginx
+  template:
+    metadata:
+      labels:
+        app: good-nginx
+    spec:
+      securityContext:        # ✅ POD LEVEL
+        runAsNonRoot: true
+        runAsUser: 1000
+
+      containers:
+      - name: nginx
+        image: nginx:1.25.3   # ✅ NO :latest
+        ports:
+        - containerPort: 80
+
+        securityContext:
+          allowPrivilegeEscalation: false
+
+        resources:            # ✅ REQUIRED
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "250m"
+            memory: "128Mi"
